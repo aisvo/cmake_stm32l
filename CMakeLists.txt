@@ -55,8 +55,9 @@ target_compile_options(${EXECUTABLE} PRIVATE
         -mthumb
         -fdata-sections
         -ffunction-sections
+		-Og
         -Wall
-        $<$<CONFIG:Debug>:-Og>
+        $<$<CONFIG:Debug>:-g -gdwarf-2>
         )
 
 target_link_options(${EXECUTABLE} PRIVATE

@@ -93,8 +93,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC_Init();
-  MX_LCD_Init();
-  MX_TS_Init();
+  //MX_LCD_Init();
+  //MX_TS_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -104,7 +104,12 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+     HAL_GPIO_TogglePin(GPIOB, LD3_Pin);
+     /* Insert delay 100 ms */
+     HAL_Delay(100);
+     HAL_GPIO_TogglePin(GPIOB, LD4_Pin);
+     /* Insert delay 100 ms */
+     HAL_Delay(1000);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
