@@ -139,6 +139,7 @@ void halInit(void) {
 #if defined(HAL_USE_COMMUNITY) || defined(__DOXYGEN__)
 #if (HAL_USE_COMMUNITY == TRUE) || defined(__DOXYGEN__)
   halCommunityInit();
+
 #endif
 #endif
 

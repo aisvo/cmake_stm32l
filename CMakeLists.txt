@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15.1)
 
 project(discoveryl152 VERSION 0.0.1 LANGUAGES C CXX ASM)
-
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
 #set(STM32_CHIP STM32F103C8)
 #cmake specific
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -12,9 +12,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #Language Def
 enable_language(C ASM)
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_C_EXTENSIONS ON)
 
 message( STATUS )
 message( STATUS "=============================================================================" )
@@ -25,7 +25,11 @@ if (CMAKE_BUILD_TYPE)
 	message( STATUS "Build type:        ${CMAKE_BUILD_TYPE}")
 endif(CMAKE_BUILD_TYPE)
 message( STATUS "Using compiler:    ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}" )
+message( STATUS "Compiler predefs:  ${CMAKE_CXX_COMPILER_PREDEFINES_COMMAND}" )
 message( STATUS "Architecture:      ${CMAKE_CXX_LIBRARY_ARCHITECTURE} / ${CMAKE_LIBRARY_ARCHITECTURE}" )
+message( STATUS "C:                 ${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION}" )
+message( STATUS "C Predefs:         ${CMAKE_C_COMPILER_PREDEFINES_COMMAND}" )
+message( STATUS "C Architecture     ${CMAKE_C_LIBRARY_ARCHITECTURE} / ${CMAKE_LIBRARY_ARCHITECTURE}" )
 message( STATUS "System Name:       ${CMAKE_SYSTEM_NAME}" )
 message( STATUS "Processor Name:    ${CMAKE_SYSTEM_PROCESSOR}" )
 message( STATUS "Installing to:     ${CMAKE_INSTALL_PREFIX}" )
@@ -75,7 +79,9 @@ add_executable(${EXECUTABLE}
 		${CMAKE_SOURCE_DIR}/src/main.c
 		)
 
-TARGET_LINK_LIBRARIES(${EXECUTABLE})
+SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 #target_compile_definitions(${EXECUTABLE} PRIVATE
 #        -DUSE_HAL_DRIVER
@@ -100,14 +106,18 @@ target_include_directories(${EXECUTABLE} PUBLIC
         )
 
 target_compile_options(${EXECUTABLE} PUBLIC
-        -mcpu=cortex-m3
-        -mthumb
-        -fdata-sections
-        -ffunction-sections
-		-fno-common
-		-Og
-        -Wall
-        $<$<CONFIG:Debug>:-g -gdwarf-2>
+		-c
+		-mcpu=cortex-m3 -mthumb -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -ffunction-sections -fdata-sections -fno-common -flto  -Wall -Wextra -Wundef -Wstrict-prototypes
+		-DCORTEX_USE_FPU=FALSE  -MD -MP
+       # -mcpu=cortex-m3
+       # -mthumb
+       # -fdata-sections
+       # -ffunction-sections
+		#-fno-common
+		#-Og
+       # -Wall
+       # $<$<CONFIG:Debug>:-g -gdwarf-2>
+
         )
 
 IF(NOT CHIBIOS_PROCESS_STACK_SIZE)
@@ -122,18 +132,30 @@ ENDIF()
 
 target_link_options(${EXECUTABLE} PUBLIC
         #-T${CMAKE_SOURCE_DIR}/BSP/STM32L152RBTx_FLASH.ld
-		-L${CHIBIOS_STARTUP_LD}
-		-T${CHIBIOS_STARTUP_LD}/STM32L152xB.ld
-        -mcpu=cortex-m3
-        -mthumb
-        -specs=nano.specs
-        -lc
-        -lm
-        -lnosys
-		-Wl,--gc-sections
+		-L ${CHIBIOS_STARTUP_LD}
+		-T ${CHIBIOS_STARTUP_LD}/STM32L152xB.ld
+        #-mcpu=cortex-m3
+        #-mthumb
+        #-specs=nano.specs
+		#-nostartfiles
+        #-lc
+        #-lm
+        #-lnosys
+		-mcpu=cortex-m3
+		-mthumb
+		-O2
+		-ggdb
+		-fomit-frame-pointer
+		-falign-functions=16
+		-ffunction-sections
+		-fdata-sections
+		-fno-common
+		-flto
+		-nostartfiles
 		-Wl,--defsym=__process_stack_size__=${CHIBIOS_PROCESS_STACK_SIZE}
 		-Wl,--defsym=__main_stack_size__=${CHIBIOS_MAIN_STACK_SIZE}
-        -Wl,-Map=${PROJECT_NAME}.map,--cref
+        -Wl,-Map=${PROJECT_NAME}.map,--cref,--no-warn-mismatch
+		-Wl,--gc-sections
         )
 
 # Print executable size
