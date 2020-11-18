@@ -41,6 +41,7 @@ message( STATUS "  ${CHIBIOS_STARTUP_LD}")
 message( STATUS "Generic HAL/OSAL")
 set(CHIBIOS_HAL_SRC
         ${CHIBIOS}/os/hal/src/hal.c
+        ${CHIBIOS}/os/hal/src/hal_st.c
         ${CHIBIOS}/os/hal/src/hal_buffers.c
         ${CHIBIOS}/os/hal/src/hal_queues.c
         ${CHIBIOS}/os/hal/src/hal_flash.c
@@ -100,6 +101,7 @@ LIST(APPEND CHIBIOS_HAL_PLATFORM_SRC
         ${CHIBIOS}/os/hal/ports/STM32/LLD/RTCv2/hal_rtc_lld.c
         ${CHIBIOS}/os/hal/ports/STM32/LLD/SPIv1/hal_i2s_lld.c
         ${CHIBIOS}/os/hal/ports/STM32/LLD/SPIv1/hal_spi_lld.c
+        ${CHIBIOS}/os/hal/ports/STM32/LLD/TIMv1/hal_st_lld.c
         ${CHIBIOS}/os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c
         ${CHIBIOS}/os/hal/ports/STM32/LLD/TIMv1/hal_icu_lld.c
         ${CHIBIOS}/os/hal/ports/STM32/LLD/TIMv1/hal_pwm_lld.c
@@ -230,4 +232,33 @@ set(CHIBIOS_TEST_INC
 message( STATUS "  ${CHIBIOS_TEST_SRC}")
 message( STATUS "  ${CHIBIOS_TEST_INC}")
 
+#Creating static lib
+message( STATUS "Generating static lib...")
+add_library(chibios STATIC
+        ${CHIBIOS_STARTUP_SRC}
+        ${CHIBIOS_STARTUP_ASM}
+        ${CHIBIOS_HAL_SRC}
+        ${CHIBIOS_HAL_PLATFORM_SRC}
+        ${CHIBIOS_CORE_SRC}
+        ${CHIBIOS_PORT_SRC}
+        ${CHIBIOS_PORT_ASM}
+        ${CHIBIOS_TEST_SRC}
+        )
+target_include_directories(chibios
+        PUBLIC
+        ${CMAKE_SOURCE_DIR}/src/cfg
+        ${CHIBIOS_LIC_INC}
+        ${CHIBIOS_STARTUP_INC}
+        ${CHIBIOS_HAL_INC}
+        ${CHIBIOS_HAL_PLATFORM_INC}
+        ${CHIBIOS_CORE_INC}
+        ${CHIBIOS_PORT_INC}
+        ${CHIBIOS_TEST_INC}
+        ${CHIBIOS_STARTUP_LD}
+        )
+target_compile_options(chibios PUBLIC
+        -c
+        -mcpu=cortex-m3 -mthumb -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -ffunction-sections -fdata-sections -fno-common -flto  -Wall -Wextra -Wundef -Wstrict-prototypes
+        -DCORTEX_USE_FPU=FALSE  -MD -MP
+        )
 message( STATUS "............................................................................." )

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15.1)
 
-project(discoveryl152 VERSION 0.0.1 LANGUAGES C CXX ASM)
+project(discoveryl152 VERSION 0.0.1 LANGUAGES C ASM)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 #set(STM32_CHIP STM32F103C8)
 #cmake specific
@@ -77,7 +77,36 @@ add_executable(${EXECUTABLE}
 		${CHIBIOS_PORT_ASM}
 		${CHIBIOS_TEST_SRC}
 		${CMAKE_SOURCE_DIR}/src/main.c
+		${CMAKE_SOURCE_DIR}/src/cfg/chconf.h
+		${CMAKE_SOURCE_DIR}/src/cfg/halconf.h
+		${CMAKE_SOURCE_DIR}/src/cfg/mcuconf.h
+		${CHIBIOS}/os/common/ports/ARMCMx/chcore_timer.h
 		)
+
+set(SOURCE
+		${CHIBIOS_STARTUP_SRC}
+		${CHIBIOS_STARTUP_ASM}
+		${CHIBIOS_HAL_SRC}
+		${CHIBIOS_HAL_PLATFORM_SRC}
+		${CHIBIOS_CORE_SRC}
+		${CHIBIOS_PORT_SRC}
+		${CHIBIOS_PORT_ASM}
+		${CHIBIOS_TEST_SRC}
+		${CMAKE_SOURCE_DIR}/src/main.c
+		${CMAKE_SOURCE_DIR}/src/cfg/chconf.h
+		${CMAKE_SOURCE_DIR}/src/cfg/halconf.h
+		${CMAKE_SOURCE_DIR}/src/cfg/mcuconf.h
+		)
+
+foreach(FILE ${SOURCE})
+	get_filename_component(FILENAME ${FILE}
+			NAME
+			)
+	set_source_files_properties (${FILE}
+			PROPERTIES
+			COMPILE_FLAGS "-Wa,-alms=${CMAKE_BINARY_DIR}/${FILENAME}.lst")
+	message(STATUS "${FILE} -->> ${CMAKE_CURRENT_} /flagadded:${FILE}")
+endforeach(FILE in ${SOURCE})
 
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -105,6 +134,15 @@ target_include_directories(${EXECUTABLE} PUBLIC
 		${CHIBIOS_STARTUP_LD}
         )
 
+#SET(CMAKE_AR  "gcc-ar")
+#SET(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> qcs <TARGET> <LINK_FLAGS> <OBJECTS>")
+#SET(CMAKE_C_ARCHIVE_FINISH   true)
+
+target_link_libraries(${EXECUTABLE}
+#		PUBLIC
+#		chibios
+		)
+
 target_compile_options(${EXECUTABLE} PUBLIC
 		-c
 		-mcpu=cortex-m3 -mthumb -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -ffunction-sections -fdata-sections -fno-common -flto  -Wall -Wextra -Wundef -Wstrict-prototypes
@@ -119,6 +157,9 @@ target_compile_options(${EXECUTABLE} PUBLIC
        # $<$<CONFIG:Debug>:-g -gdwarf-2>
 
         )
+
+
+
 
 IF(NOT CHIBIOS_PROCESS_STACK_SIZE)
 	SET(CHIBIOS_PROCESS_STACK_SIZE 0x400)
