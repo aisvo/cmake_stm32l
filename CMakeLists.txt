@@ -40,30 +40,6 @@ message( STATUS )
 #FIND_PACKAGE(ChibiOS 20.3 COMPONENTS rt hal st REQUIRED)
 include(ChibiOS)
 
-set(STM32CUBEMX_GENERATED_FILES
-
-        BSP/Src/main.c
-		BSP/Src/stm32l1xx_it.c
-		BSP/Src/stm32l1xx_hal_msp.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_adc.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_adc_ex.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_rcc.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_rcc_ex.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_flash.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_flash_ex.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_flash_ramfunc.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_gpio.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_dma.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_pwr.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_pwr_ex.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_cortex.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_lcd.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim.c
-		BSP/Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c
-		BSP/Src/system_stm32l1xx.c
-        BSP/startup_stm32l152xb.s)
-
 set(EXECUTABLE ${PROJECT_NAME}.elf)
 
 #add_executable(${EXECUTABLE} ${STM32CUBEMX_GENERATED_FILES})
@@ -105,24 +81,14 @@ foreach(FILE ${SOURCE})
 	set_source_files_properties (${FILE}
 			PROPERTIES
 			COMPILE_FLAGS "-Wa,-alms=${CMAKE_BINARY_DIR}/${FILENAME}.lst")
-	message(STATUS "${FILE} -->> ${CMAKE_CURRENT_} /flagadded:${FILE}")
+	message(STATUS "${FILE} -->> ${CMAKE_BINARY_DIR}/${FILENAME}.lst")
 endforeach(FILE in ${SOURCE})
 
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
-#target_compile_definitions(${EXECUTABLE} PRIVATE
-#        -DUSE_HAL_DRIVER
-#        -DSTM32L152xB
-#        )
-
 target_include_directories(${EXECUTABLE} PUBLIC
-#        BSP/Inc
-#		BSP/Drivers/STM32L1xx_HAL_Driver/Inc
-#		BSP/Drivers/STM32L1xx_HAL_Driver/Inc/Legacy
-#		BSP/Drivers/CMSIS/Device/ST/STM32L1xx/Include
-#        BSP/Drivers/CMSIS/Include
 		${CMAKE_SOURCE_DIR}/src/cfg
 		${CHIBIOS_LIC_INC}
 		${CHIBIOS_STARTUP_INC}
@@ -134,32 +100,19 @@ target_include_directories(${EXECUTABLE} PUBLIC
 		${CHIBIOS_STARTUP_LD}
         )
 
-#SET(CMAKE_AR  "gcc-ar")
-#SET(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> qcs <TARGET> <LINK_FLAGS> <OBJECTS>")
-#SET(CMAKE_C_ARCHIVE_FINISH   true)
-
 target_link_libraries(${EXECUTABLE}
-#		PUBLIC
-#		chibios
 		)
 
 target_compile_options(${EXECUTABLE} PUBLIC
 		-c
-		-mcpu=cortex-m3 -mthumb -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -ffunction-sections -fdata-sections -fno-common -flto  -Wall -Wextra -Wundef -Wstrict-prototypes
+		-mcpu=cortex-m3 -mthumb -O2 -ggdb
+		-fomit-frame-pointer -falign-functions=16 -ffunction-sections -fdata-sections -fno-common -flto
+		-Wall -Wextra -Wundef -Wstrict-prototypes
 		-DCORTEX_USE_FPU=FALSE  -MD -MP
-       # -mcpu=cortex-m3
-       # -mthumb
-       # -fdata-sections
-       # -ffunction-sections
 		#-fno-common
 		#-Og
-       # -Wall
        # $<$<CONFIG:Debug>:-g -gdwarf-2>
-
         )
-
-
-
 
 IF(NOT CHIBIOS_PROCESS_STACK_SIZE)
 	SET(CHIBIOS_PROCESS_STACK_SIZE 0x400)
@@ -172,13 +125,9 @@ IF(NOT CHIBIOS_MAIN_STACK_SIZE)
 ENDIF()
 
 target_link_options(${EXECUTABLE} PUBLIC
-        #-T${CMAKE_SOURCE_DIR}/BSP/STM32L152RBTx_FLASH.ld
 		-L ${CHIBIOS_STARTUP_LD}
 		-T ${CHIBIOS_STARTUP_LD}/STM32L152xB.ld
-        #-mcpu=cortex-m3
-        #-mthumb
         #-specs=nano.specs
-		#-nostartfiles
         #-lc
         #-lm
         #-lnosys
