@@ -54,6 +54,28 @@ static THD_FUNCTION(Thread2, arg) {
 }
 
 /*
+ * Thread 3: USART1
+ */
+static THD_WORKING_AREA(waThread3, 128);
+static THD_FUNCTION(Thread3, arg) {
+
+    (void) arg;
+
+    /*
+    * Activates the serial driver 1 using the driver default configuration.
+    * PA9(TX) and PA10(RX) are routed to USART1.
+    */
+    sdStart(&SD1, NULL);
+    palSetPadMode(GPIOA, 9, PAL_MODE_ALTERNATE(7)); /* USART1 TX */
+    palSetPadMode(GPIOA, 10, PAL_MODE_ALTERNATE(7)); /* USART1 RX */
+
+    while (true) {
+        chnWrite(&SD1, (const uint8_t *)"Hello hello!\r\n", 14);
+        chThdSleepMilliseconds(2000);
+    }
+}
+
+/*
  * Application entry point.
  */
 int main(void) {
@@ -69,18 +91,11 @@ int main(void) {
   chSysInit();
 
   /*
-   * Activates the serial driver 1 using the driver default configuration.
-   * PA9(TX) and PA10(RX) are routed to USART1.
-   */
-  sdStart(&SD1, NULL);
-  palSetPadMode(GPIOA, 9, PAL_MODE_ALTERNATE(7));
-  palSetPadMode(GPIOA, 10, PAL_MODE_ALTERNATE(7));
-
-  /*
    * Creates the example threads.
    */
   chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO+1, Thread1, NULL);
   chThdCreateStatic(waThread2, sizeof(waThread2), NORMALPRIO+1, Thread2, NULL);
+  chThdCreateStatic(waThread3, sizeof(waThread3), NORMALPRIO+1, Thread3, NULL);
 
   /*
    * Normal main() thread activity, in this demo it does nothing except
