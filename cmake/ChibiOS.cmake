@@ -3,7 +3,8 @@ message( STATUS "Configuring ChibiOS...                                         
 message( STATUS "............................................................................." )
 
 #ChibiOS
-set(CHIBIOS ${CMAKE_CURRENT_SOURCE_DIR}/ChibiOS)
+
+set(CHIBIOS ${CMAKE_SOURCE_DIR}/ChibiOS)
 message( STATUS "ChibiOS Root = ${CHIBIOS}")
 
 #LICENSING
@@ -246,32 +247,32 @@ message( STATUS "  ${CHIBIOS_TEST_SRC}")
 message( STATUS "  ${CHIBIOS_TEST_INC}")
 
 #Creating static lib
-message( STATUS "Generating static lib...")
-add_library(chibios STATIC
-        ${CHIBIOS_STARTUP_SRC}
-        ${CHIBIOS_STARTUP_ASM}
-        ${CHIBIOS_HAL_SRC}
-        ${CHIBIOS_HAL_PLATFORM_SRC}
-        ${CHIBIOS_CORE_SRC}
-        ${CHIBIOS_PORT_SRC}
-        ${CHIBIOS_PORT_ASM}
-        ${CHIBIOS_TEST_SRC}
-        )
-target_include_directories(chibios
-        PUBLIC
-        ${CMAKE_SOURCE_DIR}/src/cfg
-        ${CHIBIOS_LIC_INC}
-        ${CHIBIOS_STARTUP_INC}
-        ${CHIBIOS_HAL_INC}
-        ${CHIBIOS_HAL_PLATFORM_INC}
-        ${CHIBIOS_CORE_INC}
-        ${CHIBIOS_PORT_INC}
-        ${CHIBIOS_TEST_INC}
-        ${CHIBIOS_STARTUP_LD}
-        )
-target_compile_options(chibios PUBLIC
-        -c
-        -mcpu=cortex-m3 -mthumb -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -ffunction-sections -fdata-sections -fno-common -flto  -Wall -Wextra -Wundef -Wstrict-prototypes
-        -DCORTEX_USE_FPU=FALSE  -MD -MP
-        )
+#message( STATUS "Generating static lib...")
+#add_library(chibios STATIC
+#        ${CHIBIOS_STARTUP_SRC}
+#        ${CHIBIOS_STARTUP_ASM}
+#        ${CHIBIOS_HAL_SRC}
+#        ${CHIBIOS_HAL_PLATFORM_SRC}
+#        ${CHIBIOS_CORE_SRC}
+#        ${CHIBIOS_PORT_SRC}
+#        ${CHIBIOS_PORT_ASM}
+#        ${CHIBIOS_TEST_SRC}
+#        )
+#target_include_directories(chibios
+#        PUBLIC
+#        ${CMAKE_SOURCE_DIR}/src/cfg
+#        ${CHIBIOS_LIC_INC}
+#        ${CHIBIOS_STARTUP_INC}
+#        ${CHIBIOS_HAL_INC}
+#        ${CHIBIOS_HAL_PLATFORM_INC}
+#        ${CHIBIOS_CORE_INC}
+#        ${CHIBIOS_PORT_INC}
+#        ${CHIBIOS_TEST_INC}
+#        ${CHIBIOS_STARTUP_LD}
+#        )
+#target_compile_options(chibios PUBLIC
+#        -c
+#        -mcpu=cortex-m3 -mthumb -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -ffunction-sections -fdata-sections -fno-common -flto  -Wall -Wextra -Wundef -Wstrict-prototypes
+#        -DCORTEX_USE_FPU=FALSE  -MD -MP
+#        )
 message( STATUS "............................................................................." )
