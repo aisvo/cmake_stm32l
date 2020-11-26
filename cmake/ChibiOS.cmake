@@ -197,6 +197,19 @@ message( STATUS "  ${CHIBIOS_PORT_SRC}")
 message( STATUS "  ${CHIBIOS_PORT_ASM}")
 message( STATUS "  ${CHIBIOS_PORT_INC}")
 
+#Others (Lib)
+message( STATUS "Others(Lib)")
+set(CHIBIOS_OTHERS_SRC
+        ${CHIBIOS}/os/hal/lib/streams/chprintf.c
+        ${CHIBIOS}/os/hal/lib/streams/memstreams.c
+        ${CHIBIOS}/os/hal/lib/streams/nullstreams.c
+        )
+set(CHIBIOS_OTHERS_INC
+        ${CHIBIOS}/os/hal/lib/streams
+        )
+message( STATUS "  ${CHIBIOS_OTHERS_SRC}")
+message( STATUS "  ${CHIBIOS_OTHERS_INC}")
+
 #Test files
 message( STATUS "TEST")
 set(CHIBIOS_TEST_SRC

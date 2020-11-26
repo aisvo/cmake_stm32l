@@ -42,7 +42,6 @@ include(ChibiOS)
 
 set(EXECUTABLE ${PROJECT_NAME}.elf)
 
-#add_executable(${EXECUTABLE} ${STM32CUBEMX_GENERATED_FILES})
 add_executable(${EXECUTABLE}
 		${CHIBIOS_STARTUP_SRC}
 		${CHIBIOS_STARTUP_ASM}
@@ -51,12 +50,14 @@ add_executable(${EXECUTABLE}
 		${CHIBIOS_CORE_SRC}
 		${CHIBIOS_PORT_SRC}
 		${CHIBIOS_PORT_ASM}
+		${CHIBIOS_OTHERS_SRC}
 		${CHIBIOS_TEST_SRC}
 		${CMAKE_SOURCE_DIR}/src/main.c
 		${CMAKE_SOURCE_DIR}/src/cfg/chconf.h
 		${CMAKE_SOURCE_DIR}/src/cfg/halconf.h
 		${CMAKE_SOURCE_DIR}/src/cfg/mcuconf.h
 		${CHIBIOS}/os/common/ports/ARMCMx/chcore_timer.h
+		${CMAKE_SOURCE_DIR}/src/devices/mpu6050.c
 		)
 
 set(SOURCE
@@ -67,6 +68,7 @@ set(SOURCE
 		${CHIBIOS_CORE_SRC}
 		${CHIBIOS_PORT_SRC}
 		${CHIBIOS_PORT_ASM}
+		${CHIBIOS_OTHERS_SRC}
 		${CHIBIOS_TEST_SRC}
 		${CMAKE_SOURCE_DIR}/src/main.c
 		${CMAKE_SOURCE_DIR}/src/cfg/chconf.h
@@ -90,12 +92,14 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 target_include_directories(${EXECUTABLE} PUBLIC
 		${CMAKE_SOURCE_DIR}/src/cfg
+		${CMAKE_SOURCE_DIR}/src/devices
 		${CHIBIOS_LIC_INC}
 		${CHIBIOS_STARTUP_INC}
 		${CHIBIOS_HAL_INC}
 		${CHIBIOS_HAL_PLATFORM_INC}
 		${CHIBIOS_CORE_INC}
 		${CHIBIOS_PORT_INC}
+		${CHIBIOS_OTHERS_INC}
 		${CHIBIOS_TEST_INC}
 		${CHIBIOS_STARTUP_LD}
         )
