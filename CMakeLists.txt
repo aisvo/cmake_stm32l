@@ -39,3 +39,4 @@ message( STATUS )
 #Projects
 add_subdirectory(./projects/01)
 add_subdirectory(./projects/02)
+add_subdirectory(./projects/03)
